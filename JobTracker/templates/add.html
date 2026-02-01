@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+
+{% block title %}添加投递 - 秋招投递管理系统{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="bi bi-plus-circle me-2"></i>添加投递记录
+                </h5>
+            </div>
+            
+            <div class="card-body">
+                <form method="POST">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="company_name" class="form-label">
+                                公司名称 <span class="text-danger">*</span>
+                            </label>
+                            <input type="text" class="form-control" name="company_name" id="company_name" 
+                                   placeholder="如：我的梦中情司" required>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="position_name" class="form-label">
+                                职位名称 <span class="text-danger">*</span>
+                            </label>
+                            <input type="text" class="form-control" name="position_name" id="position_name" 
+                                   placeholder="如：摸鱼牛马" required>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="apply_date" class="form-label">
+                                投递日期 <span class="text-danger">*</span>
+                            </label>
+                            <input type="date" class="form-control" name="apply_date" id="apply_date" 
+                                   value="{{ today }}" required>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="status" class="form-label">当前状态</label>
+                            <select class="form-select" name="status" id="status">
+                                {% for status in status_options %}
+                                <option value="{{ status }}" {% if status == '准备中' %}selected{% endif %}>
+                                    {{ status }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="notes" class="form-label">备注信息</label>
+                        <textarea class="form-control" name="notes" id="notes" rows="4" 
+                                  placeholder="记录一些重要信息，如内推人、投递渠道、薪资期望等..."></textarea>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between">
+                        <a href="{{ url_for('index') }}" class="btn btn-secondary">
+                            <i class="bi bi-arrow-left me-1"></i>返回列表
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-save me-1"></i>保存投递记录
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <!-- 提示信息 -->
+        <div class="card mt-4">
+            <div class="card-body">
+                <h6 class="card-title">
+                    <i class="bi bi-lightbulb text-warning me-2"></i>使用提示
+                </h6>
+                <ul class="mb-0">
+                    <li>标记 <span class="text-danger">*</span> 的字段为必填项</li>
+                    <li>状态可以随时通过编辑功能进行更新</li>
+                    <li>备注中可以记录投递渠道、内推信息、薪资等重要细节</li>
+                    <li>建议及时更新投递状态，便于跟踪进度</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// 设置默认日期为今天
+document.addEventListener('DOMContentLoaded', function() {
+    const dateInput = document.getElementById('apply_date');
+    if (!dateInput.value) {
+        const today = new Date().toISOString().split('T')[0];
+        dateInput.value = today;
+    }
+});
+
+// 表单验证
+document.querySelector('form').addEventListener('submit', function(e) {
+    const companyName = document.getElementById('company_name').value.trim();
+    const positionName = document.getElementById('position_name').value.trim();
+    const applyDate = document.getElementById('apply_date').value;
+    
+    if (!companyName || !positionName || !applyDate) {
+        e.preventDefault();
+        alert('请填写所有必填字段！');
+        return false;
+    }
+});
+</script>
+{% endblock %} 

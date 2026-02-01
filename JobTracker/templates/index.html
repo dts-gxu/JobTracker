@@ -1,0 +1,399 @@
+{% extends "base.html" %}
+
+{% block title %}首页 - 秋招投递管理系统{% endblock %}
+
+{% block content %}
+<style>
+.stats-card {
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    overflow: hidden;
+}
+
+.stats-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+}
+
+.stats-card .card-body {
+    padding: 2rem 1.5rem;
+}
+
+.stats-icon {
+    font-size: 2.5rem;
+    opacity: 0.8;
+}
+
+.stats-number {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.stats-label {
+    font-size: 1rem;
+    font-weight: 500;
+    opacity: 0.9;
+}
+
+.welcome-card {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    border-radius: 20px;
+    margin-bottom: 2rem;
+}
+
+.search-card {
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+}
+
+.table-card {
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+    overflow: hidden;
+}
+
+.table th {
+    background: #f8f9fa;
+    border: none;
+    font-weight: 600;
+    color: #495057;
+    padding: 1rem 0.75rem;
+}
+
+.table td {
+    border: none;
+    padding: 1rem 0.75rem;
+    vertical-align: middle;
+}
+
+.table tbody tr {
+    border-bottom: 1px solid #f1f3f4;
+}
+
+.table tbody tr:hover {
+    background-color: #f8f9fa;
+}
+
+.status-badge {
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.btn-action {
+    border: none;
+    border-radius: 8px;
+    padding: 0.5rem 0.75rem;
+    margin: 0 0.25rem;
+    transition: all 0.2s ease;
+}
+
+.btn-action:hover {
+    transform: translateY(-1px);
+}
+
+.empty-state {
+    padding: 4rem 2rem;
+    text-align: center;
+    color: #6c757d;
+}
+
+.empty-icon {
+    font-size: 4rem;
+    margin-bottom: 1.5rem;
+    opacity: 0.5;
+}
+</style>
+
+<!-- 欢迎卡片 -->
+<div class="card welcome-card">
+    <div class="card-body text-center py-4">
+        <h2 class="mb-3">
+            <i class="bi bi-sun me-2"></i>
+            欢迎回来，{{ user.real_name or user.username }}！
+        </h2>
+        <p class="mb-0 fs-5">开始管理您的求职进度，追踪每一个机会</p>
+    </div>
+</div>
+
+<!-- 统计卡片 -->
+<div class="row g-4 mb-4">
+    <div class="col-lg-3 col-md-6">
+        <div class="card stats-card bg-primary text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="stats-number">{{ stats.total }}</div>
+                        <div class="stats-label">总投递数</div>
+                    </div>
+                    <div>
+                        <i class="bi bi-send stats-icon"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-3 col-md-6">
+        <div class="card stats-card bg-success text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="stats-number">{{ stats.by_status.get('Offer', 0) }}</div>
+                        <div class="stats-label">收到Offer</div>
+                    </div>
+                    <div>
+                        <i class="bi bi-trophy stats-icon"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-3 col-md-6">
+        <div class="card stats-card bg-warning text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="stats-number">
+                            {{ (stats.by_status.get('一面', 0) + stats.by_status.get('二面', 0) + 
+                                stats.by_status.get('三面', 0) + stats.by_status.get('HR面', 0)) }}
+                        </div>
+                        <div class="stats-label">面试中</div>
+                    </div>
+                    <div>
+                        <i class="bi bi-person-video2 stats-icon"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-3 col-md-6">
+        <div class="card stats-card bg-info text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="stats-number">
+                            {{ (stats.by_status.get('已投递', 0) + stats.by_status.get('笔试', 0)) }}
+                        </div>
+                        <div class="stats-label">等待回复</div>
+                    </div>
+                    <div>
+                        <i class="bi bi-clock stats-icon"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 搜索和筛选 -->
+<div class="card search-card mb-4">
+    <div class="card-body">
+        <form method="GET" class="row g-3 align-items-end">
+            <div class="col-md-3">
+                <label for="status" class="form-label fw-semibold">
+                    <i class="bi bi-funnel me-1"></i>状态筛选
+                </label>
+                <select class="form-select" name="status" id="status">
+                    <option value="">全部状态</option>
+                    {% for status in status_options %}
+                    <option value="{{ status }}" {% if current_status == status %}selected{% endif %}>
+                        {{ status }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <div class="col-md-6">
+                <label for="search" class="form-label fw-semibold">
+                    <i class="bi bi-search me-1"></i>搜索投递
+                </label>
+                <input type="text" class="form-control" name="search" id="search" 
+                       placeholder="输入公司名称或职位名称" value="{{ search_query }}">
+            </div>
+            
+            <div class="col-md-3">
+                <div class="d-grid gap-2 d-md-flex">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-search me-1"></i>搜索
+                    </button>
+                    <a href="{{ url_for('index') }}" class="btn btn-outline-secondary">
+                        <i class="bi bi-arrow-clockwise me-1"></i>重置
+                    </a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- 投递记录列表 -->
+<div class="card table-card">
+    <div class="card-header bg-white py-3">
+        <div class="d-flex justify-content-between align-items-center">
+            <h5 class="mb-0 fw-bold">
+                <i class="bi bi-list-ul me-2 text-primary"></i>
+                投递记录
+                <span class="badge bg-secondary ms-2">{{ applications|length }}</span>
+            </h5>
+            <a href="{{ url_for('add_application') }}" class="btn btn-primary">
+                <i class="bi bi-plus-circle me-1"></i>添加新投递
+            </a>
+        </div>
+    </div>
+    
+    <div class="card-body p-0">
+        {% if applications %}
+        <div class="table-responsive">
+            <table class="table mb-0">
+                <thead>
+                    <tr>
+                        <th>公司名称</th>
+                        <th>职位名称</th>
+                        <th>投递日期</th>
+                        <th>当前状态</th>
+                        <th>备注</th>
+                        <th width="120">操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for app in applications %}
+                    <tr>
+                        <td>
+                            <div class="fw-bold text-dark">{{ app.company_name }}</div>
+                            {% if app.work_location %}
+                            <small class="text-muted">{{ app.work_location }}</small>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div>{{ app.position_name }}</div>
+                            {% if app.salary_min and app.salary_max %}
+                            <small class="text-success">{{ app.salary_min }}-{{ app.salary_max }}K</small>
+                            {% endif %}
+                        </td>
+                        <td>{{ app.apply_date.strftime('%m/%d') }}</td>
+                        <td>
+                            <span class="status-badge
+                                {% if app.status == 'Offer' %}bg-success text-white
+                                {% elif app.status == '已拒绝' %}bg-danger text-white
+                                {% elif '面' in app.status %}bg-warning text-dark
+                                {% elif app.status == '已投递' %}bg-info text-white
+                                {% elif app.status == '准备中' %}bg-secondary text-white
+                                {% else %}bg-primary text-white
+                                {% endif %}">
+                                {{ app.status }}
+                            </span>
+                        </td>
+                        <td>
+                            {% if app.notes %}
+                                <div class="text-truncate" style="max-width: 150px;" title="{{ app.notes }}">
+                                    {{ app.notes }}
+                                </div>
+                            {% else %}
+                                <span class="text-muted">-</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="btn-group btn-group-sm">
+                                <a href="{{ url_for('edit_application', id=app.id) }}" 
+                                   class="btn btn-outline-primary btn-action" title="编辑">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                                <button type="button" class="btn btn-outline-danger btn-action" 
+                                        data-id="{{ app.id }}" 
+                                        data-company="{{ app.company_name }}" 
+                                        data-position="{{ app.position_name }}"
+                                        onclick="simpleDelete(this)" 
+                                        title="删除">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <i class="bi bi-inbox empty-icon"></i>
+            <h4 class="mb-3">暂无投递记录</h4>
+            <p class="mb-4">开始记录您的第一个投递吧！每一次投递都是成功的开始。</p>
+            <a href="{{ url_for('add_application') }}" class="btn btn-primary btn-lg">
+                <i class="bi bi-plus-circle me-2"></i>添加投递记录
+            </a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+
+
+<script>
+// 简化的删除确认功能
+function simpleDelete(btn) {
+    var id = btn.getAttribute('data-id');
+    var company = btn.getAttribute('data-company');
+    var position = btn.getAttribute('data-position');
+    
+    var msg = '确定要删除这条记录吗？\n\n公司：' + company + '\n职位：' + position;
+    
+    if (window.confirm(msg)) {
+        // 直接跳转到删除URL
+        window.location.href = '/delete/' + id + '?confirm=1';
+    }
+}
+
+// 页面加载动画
+document.addEventListener('DOMContentLoaded', function() {
+    // 统计卡片动画
+    const statsCards = document.querySelectorAll('.stats-card');
+    statsCards.forEach((card, index) => {
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(20px)';
+        
+        setTimeout(() => {
+            card.style.transition = 'all 0.6s ease';
+            card.style.opacity = '1';
+            card.style.transform = 'translateY(0)';
+        }, index * 100);
+    });
+    
+    // 表格行动画
+    const tableRows = document.querySelectorAll('tbody tr');
+    tableRows.forEach((row, index) => {
+        if (index < 10) { // 只对前10行添加动画，避免性能问题
+            row.style.opacity = '0';
+            row.style.transform = 'translateX(-20px)';
+            
+            setTimeout(() => {
+                row.style.transition = 'all 0.4s ease';
+                row.style.opacity = '1';
+                row.style.transform = 'translateX(0)';
+            }, 500 + index * 50);
+        }
+    });
+});
+
+// 搜索框自动提交（可选）
+let searchTimeout;
+document.getElementById('search').addEventListener('input', function() {
+    clearTimeout(searchTimeout);
+    searchTimeout = setTimeout(() => {
+        if (this.value.length >= 2 || this.value.length === 0) {
+            // 可以启用自动搜索
+            // this.form.submit();
+        }
+    }, 500);
+});
+</script>
+{% endblock %} 

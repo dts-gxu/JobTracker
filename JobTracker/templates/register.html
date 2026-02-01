@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>注册 - 秋招投递管理系统</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --card-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            --input-focus: rgba(102, 126, 234, 0.2);
+        }
+        
+        body {
+            background: var(--primary-gradient);
+            min-height: 100vh;
+            padding: 2rem 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        /* 动态背景 */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="0.5"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+            z-index: -1;
+        }
+        
+        .register-container {
+            max-width: 700px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .register-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            box-shadow: var(--card-shadow);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .register-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.15);
+        }
+        
+        .register-header {
+            background: var(--primary-gradient);
+            color: white;
+            text-align: center;
+            padding: 3rem 2rem 2rem;
+            position: relative;
+        }
+        
+        .register-header::before {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 20px solid transparent;
+            border-right: 20px solid transparent;
+            border-top: 10px solid rgba(255,255,255,0.1);
+        }
+        
+        .brand-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            text-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        .register-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .register-subtitle {
+            opacity: 0.9;
+            font-size: 1.1rem;
+            font-weight: 300;
+        }
+        
+        .register-body {
+            padding: 2.5rem;
+        }
+        
+        .form-section {
+            margin-bottom: 2.5rem;
+            padding-bottom: 2rem;
+            border-bottom: 2px solid #f8f9fa;
+            position: relative;
+        }
+        
+        .form-section:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+        
+        .section-title {
+            color: #667eea;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .section-title::after {
+            content: '';
+            flex: 1;
+            height: 2px;
+            background: linear-gradient(90deg, #667eea, transparent);
+            margin-left: 1rem;
+        }
+        
+        .form-floating {
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+        
+        .form-control, .form-select {
+            border: 2px solid #e9ecef;
+            border-radius: 15px;
+            padding: 1rem 1.25rem;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: rgba(248, 249, 250, 0.8);
+            height: auto;
+        }
+        
+        .form-control:focus, .form-select:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 0.2rem var(--input-focus);
+            background: white;
+            transform: translateY(-2px);
+        }
+        
+        .form-floating > label {
+            padding: 1rem 1.25rem;
+            color: #6c757d;
+            font-weight: 500;
+        }
+        
+        .form-floating > .form-control:focus ~ label,
+        .form-floating > .form-control:not(:placeholder-shown) ~ label,
+        .form-floating > .form-select:focus ~ label,
+        .form-floating > .form-select:not([value=""]) ~ label {
+            color: #667eea;
+            transform: scale(0.85) translateY(-0.5rem) translateX(0.15rem);
+        }
+        
+        .form-text {
+            color: #6c757d;
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+        
+        .btn-register {
+            background: var(--primary-gradient);
+            border: none;
+            border-radius: 15px;
+            padding: 1rem 2rem;
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: white;
+            width: 100%;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 1.5rem;
+        }
+        
+        .btn-register::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255,255,255,0.2);
+            border-radius: 50%;
+            transition: all 0.3s ease;
+            transform: translate(-50%, -50%);
+        }
+        
+        .btn-register:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-register:hover::before {
+            width: 100%;
+            height: 100%;
+        }
+        
+        .btn-register:active {
+            transform: translateY(-1px);
+        }
+        
+        .login-link {
+            text-align: center;
+            padding-top: 1.5rem;
+            border-top: 1px solid #e9ecef;
+        }
+        
+        .login-link a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .login-link a::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -2px;
+            left: 0;
+            background: #667eea;
+            transition: width 0.3s ease;
+        }
+        
+        .login-link a:hover {
+            color: #764ba2;
+        }
+        
+        .login-link a:hover::after {
+            width: 100%;
+        }
+        
+        .security-note {
+            text-align: center;
+            margin-top: 2rem;
+            color: rgba(255,255,255,0.9);
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+        
+        .security-icon {
+            font-size: 1.2rem;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        
+        .alert {
+            border: none;
+            border-radius: 12px;
+            margin-bottom: 1.5rem;
+            padding: 1rem 1.25rem;
+            font-weight: 500;
+        }
+        
+        .alert-danger {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+            color: white;
+        }
+        
+        .alert-success {
+            background: linear-gradient(135deg, #51cf66, #40c057);
+            color: white;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .register-container {
+                padding: 10px;
+            }
+            
+            .register-header {
+                padding: 2rem 1.5rem 1.5rem;
+            }
+            
+            .register-body {
+                padding: 2rem 1.5rem;
+            }
+            
+            .brand-icon {
+                font-size: 3rem;
+            }
+            
+            .register-title {
+                font-size: 1.5rem;
+            }
+        }
+        
+        /* 加载动画 */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s linear infinite;
+            margin-right: 0.5rem;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* 步骤指示器 */
+        .step-indicator {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 2rem;
+            gap: 1rem;
+        }
+        
+        .step {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(102, 126, 234, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #667eea;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .step.active {
+            background: #667eea;
+            color: white;
+            transform: scale(1.1);
+        }
+        
+        .step.completed {
+            background: #51cf66;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="register-container">
+            <div class="card register-card">
+                <div class="register-header">
+                    <i class="bi bi-person-plus-fill brand-icon"></i>
+                    <h1 class="register-title">创建账户</h1>
+                    <p class="register-subtitle">开始您的智能求职管理之旅</p>
+                </div>
+                
+                <div class="register-body">
+                    <!-- 步骤指示器 -->
+                    <div class="step-indicator">
+                        <div class="step active">1</div>
+                        <div class="step">2</div>
+                        <div class="step">3</div>
+                    </div>
+                    
+                    <!-- Flash 消息 -->
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+                        {% if messages %}
+                            {% for category, message in messages %}
+                                <div class="alert alert-{{ 'danger' if category == 'error' else 'success' }} alert-dismissible fade show" role="alert">
+                                    <i class="bi bi-{{ 'exclamation-triangle' if category == 'error' else 'check-circle' }} me-2"></i>
+                                    {{ message }}
+                                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert"></button>
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+                    {% endwith %}
+                    
+                    <form method="POST" id="registerForm">
+                        <!-- 基本信息 -->
+                        <div class="form-section">
+                            <h6 class="section-title">
+                                <i class="bi bi-person-circle"></i>基本信息
+                            </h6>
+                            
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-floating">
+                                        <input type="text" class="form-control" name="username" id="username" 
+                                               placeholder="请输入用户名" required>
+                                        <label for="username">用户名 *</label>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-6">
+                                    <div class="form-floating">
+                                        <input type="text" class="form-control" name="real_name" id="real_name" 
+                                               placeholder="请输入真实姓名">
+                                        <label for="real_name">真实姓名</label>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-floating">
+                                        <input type="email" class="form-control" name="email" id="email" 
+                                               placeholder="请输入邮箱地址" required>
+                                        <label for="email">邮箱地址 *</label>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-6">
+                                    <div class="form-floating">
+                                        <input type="tel" class="form-control" name="phone" id="phone" 
+                                               placeholder="请输入手机号码">
+                                        <label for="phone">手机号码</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 密码设置 -->
+                        <div class="form-section">
+                            <h6 class="section-title">
+                                <i class="bi bi-shield-lock"></i>密码设置
+                            </h6>
+                            
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-floating">
+                                        <input type="password" class="form-control" name="password" id="password" 
+                                               placeholder="请输入密码" required>
+                                        <label for="password">密码 *</label>
+                                    </div>
+                                    <div class="form-text">
+                                        <i class="bi bi-info-circle"></i>密码至少6位字符
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-6">
+                                    <div class="form-floating">
+                                        <input type="password" class="form-control" name="confirm_password" id="confirm_password" 
+                                               placeholder="请再次输入密码" required>
+                                        <label for="confirm_password">确认密码 *</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 求职信息 -->
+                        <div class="form-section">
+                            <h6 class="section-title">
+                                <i class="bi bi-briefcase"></i>求职信息（可选）
+                            </h6>
+                            
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-floating">
+                                        <input type="text" class="form-control" name="target_position" id="target_position" 
+                                               placeholder="如：前端工程师">
+                                        <label for="target_position">目标职位</label>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-6">
+                                    <div class="form-floating">
+                                        <select class="form-select" name="graduation_year" id="graduation_year">
+                                            <option value="">请选择毕业年份</option>
+                                            {% for year in range(2020, 2030) %}
+                                            <option value="{{ year }}" {% if year == 2025 %}selected{% endif %}>{{ year }}年</option>
+                                            {% endfor %}
+                                        </select>
+                                        <label for="graduation_year">毕业年份</label>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-floating">
+                                        <input type="text" class="form-control" name="school" id="school" 
+                                               placeholder="请输入学校名称">
+                                        <label for="school">学校</label>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-6">
+                                    <div class="form-floating">
+                                        <input type="text" class="form-control" name="major" id="major" 
+                                               placeholder="请输入专业名称">
+                                        <label for="major">专业</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-register" id="registerBtn">
+                            <i class="bi bi-person-plus me-2"></i>
+                            <span class="btn-text">创建账户</span>
+                        </button>
+                    </form>
+                    
+                    <div class="login-link">
+                        <p class="mb-0">已有账户？ 
+                            <a href="{{ url_for('login') }}">
+                                立即登录 <i class="bi bi-arrow-right ms-1"></i>
+                            </a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="security-note">
+                <i class="bi bi-shield-check security-icon"></i>
+                注册即表示您同意我们的服务条款，数据完全本地存储
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // 表单验证和提交
+        document.getElementById('registerForm').addEventListener('submit', function(e) {
+            const username = document.getElementById('username').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value.trim();
+            const confirmPassword = document.getElementById('confirm_password').value.trim();
+            const registerBtn = document.getElementById('registerBtn');
+            const btnText = registerBtn.querySelector('.btn-text');
+            
+            // 检查必填字段
+            if (!username || !email || !password || !confirmPassword) {
+                e.preventDefault();
+                showAlert('请填写所有必填字段', 'error');
+                return false;
+            }
+            
+            // 检查密码长度
+            if (password.length < 6) {
+                e.preventDefault();
+                showAlert('密码至少需要6位字符', 'error');
+                return false;
+            }
+            
+            // 检查密码确认
+            if (password !== confirmPassword) {
+                e.preventDefault();
+                showAlert('两次输入的密码不一致', 'error');
+                return false;
+            }
+            
+            // 检查邮箱格式
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                e.preventDefault();
+                showAlert('请输入有效的邮箱地址', 'error');
+                return false;
+            }
+            
+            // 显示加载状态
+            registerBtn.disabled = true;
+            btnText.innerHTML = '<span class="loading"></span>创建中...';
+        });
+        
+        // 显示提示信息
+        function showAlert(message, type) {
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert alert-${type === 'error' ? 'danger' : 'success'} alert-dismissible fade show`;
+            alertDiv.innerHTML = `
+                <i class="bi bi-${type === 'error' ? 'exclamation-triangle' : 'check-circle'} me-2"></i>
+                ${message}
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert"></button>
+            `;
+            
+            const form = document.getElementById('registerForm');
+            form.insertBefore(alertDiv, form.firstChild);
+            
+            // 自动关闭
+            setTimeout(() => {
+                if (alertDiv.parentNode) {
+                    alertDiv.remove();
+                }
+            }, 5000);
+        }
+        
+        // 实时密码确认验证
+        document.getElementById('confirm_password').addEventListener('input', function() {
+            const password = document.getElementById('password').value;
+            const confirmPassword = this.value;
+            
+            if (confirmPassword && password !== confirmPassword) {
+                this.setCustomValidity('密码不匹配');
+                this.style.borderColor = '#dc3545';
+            } else {
+                this.setCustomValidity('');
+                this.style.borderColor = '#e9ecef';
+            }
+        });
+        
+        // 输入框焦点效果
+        document.querySelectorAll('.form-control, .form-select').forEach(input => {
+            input.addEventListener('focus', function() {
+                this.parentElement.style.transform = 'translateY(-2px)';
+            });
+            
+            input.addEventListener('blur', function() {
+                this.parentElement.style.transform = 'translateY(0)';
+            });
+        });
+        
+        // 步骤指示器动画
+        function updateStepIndicator(currentStep) {
+            const steps = document.querySelectorAll('.step');
+            steps.forEach((step, index) => {
+                step.classList.remove('active', 'completed');
+                if (index < currentStep) {
+                    step.classList.add('completed');
+                } else if (index === currentStep) {
+                    step.classList.add('active');
+                }
+            });
+        }
+        
+        // 表单进度跟踪
+        let completedSections = 0;
+        document.querySelectorAll('.form-section').forEach((section, index) => {
+            const inputs = section.querySelectorAll('input[required]');
+            inputs.forEach(input => {
+                input.addEventListener('input', function() {
+                    const sectionInputs = section.querySelectorAll('input[required]');
+                    const filledInputs = Array.from(sectionInputs).filter(inp => inp.value.trim());
+                    
+                    if (filledInputs.length === sectionInputs.length) {
+                        updateStepIndicator(index + 1);
+                    }
+                });
+            });
+        });
+        
+        // 自动聚焦到用户名输入框
+        setTimeout(() => {
+            document.getElementById('username').focus();
+        }, 500);
+        
+        // 页面加载动画
+        document.addEventListener('DOMContentLoaded', function() {
+            const card = document.querySelector('.register-card');
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(30px)';
+            
+            setTimeout(() => {
+                card.style.transition = 'all 0.6s cubic-bezier(0.4, 0, 0.2, 1)';
+                card.style.opacity = '1';
+                card.style.transform = 'translateY(0)';
+            }, 100);
+        });
+    </script>
+</body>
+</html> 
